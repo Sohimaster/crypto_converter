@@ -1,19 +1,21 @@
+import asyncio
 import json
 from typing import Dict
 
 import websockets
+from websockets import WebSocketException
 
-from src.quote_consumer.updater import BaseUpdater
+from src.quote_consumer.updater import BaseStorage
 
 import logging
 
 
-class BaseFetcher:
+class BaseRatesProvider:
 
-    def __init__(self, url: str, currency_pairs: str, updater: BaseUpdater):
+    def __init__(self, url: str, currency_pairs: str, storage: BaseStorage):
         self.url = url
         self.currency_pairs = self._parse_currency_pairs(currency_pairs)
-        self.updater = updater
+        self.storage = storage
 
     @staticmethod
     def _parse_currency_pairs(pairs: str) -> Dict[str, Dict[str, str]]:
@@ -28,7 +30,7 @@ class BaseFetcher:
         raise NotImplementedError()
 
 
-class BinanceFetcher(BaseFetcher):
+class BinanceRatesProvider(BaseRatesProvider):
     async def sync_pairs(self):
         while True:
             try:
@@ -52,17 +54,18 @@ class BinanceFetcher(BaseFetcher):
                             source = pair_data['source']
                             target = pair_data['target']
                             rate = message_data['data']['c']
-                            self.updater.update_pair(
+                            self.storage.update_pair(
                                 source_currency=source,
                                 target_currency=target,
                                 rate=rate
                             )
-                            logging.info(f"Updated: {source} -> {target}. Rate: {rate}")
-            except websockets.exceptions.ConnectionClosed:
-                logging.warning("WebSocket connection closed. Reconnecting...")
+                            logging.info(f"Updated {source} -> {target}. Rate: {rate}")
+            except WebSocketException as e:
+                logging.warning(f"WebSocket issue: {e}. Reconnecting...")
                 continue
+            except asyncio.exceptions.CancelledError:
+                logging.info("Asyncio task cancelled. Exiting...")
+                break
             except Exception as e:
-                logging.error(f"An error occurred: {e}. Restarting sync_pairs...")
-            except SystemExit:
-                logging.info("System exit requested. Terminating sync_pairs.")
+                logging.error(f"An unexpected error occurred: {e}. Stopping...")
                 break

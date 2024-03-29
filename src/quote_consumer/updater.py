@@ -12,7 +12,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-class BaseUpdater(metaclass=Singleton):
+class BaseStorage(metaclass=Singleton):
     def __init__(self):
         pass
 
@@ -38,7 +38,7 @@ class BaseUpdater(metaclass=Singleton):
         raise NotImplementedError()
 
 
-class RedisUpdater(BaseUpdater):
+class RedisStorage(BaseStorage):
     def __init__(self):
         self.storage = redis.Redis(host='localhost', port=6379, db=0)
 
