@@ -26,14 +26,14 @@ class BaseStorage(metaclass=Singleton):
         self._save_to_storage(
             source_currency=source_currency,
             target_currency=target_currency,
-            rate=Decimal(rate).quantize(Decimal('1.000000000000'))
+            rate=rate
         )
         # Save the rate for the reverse pair
         inverse_rate = self._get_inverse_rate(rate)
         self._save_to_storage(
             source_currency=target_currency,
             target_currency=source_currency,
-            rate=Decimal(inverse_rate).quantize(Decimal('1.000000000000'))
+            rate=inverse_rate
         )
 
     def _save_to_storage(self, source_currency: str, target_currency: str, rate: float):
