@@ -5,8 +5,9 @@ import os
 
 from dotenv import load_dotenv
 
-from src.quote_consumer.fetcher import BinanceRatesProvider
-from src.quote_consumer.updater import RedisStorage
+from config import settings
+from quote_consumer.provider import BinanceRatesProvider
+from quote_consumer.storage import RedisStorage
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -30,8 +31,8 @@ async def main():
     if args.provider == 'binance':
         fetcher = BinanceRatesProvider(
             storage=storage,
-            currency_pairs=os.getenv('CURRENCY_PAIRS'),
-            url=os.getenv('BINANCE_API_URL'),
+            currency_pairs=settings.CURRENCY_PAIRS,
+            url=settings.BINANCE_API_URL,
         )
     else:
         raise ValueError(f"Unsupported provider: {args.provider}")
