@@ -5,7 +5,7 @@ from typing import Dict
 import websockets
 from websockets import WebSocketException
 
-from src.quote_consumer.updater import BaseStorage
+from src.quote_consumer.storage import BaseStorage
 
 import logging
 

@@ -29,7 +29,7 @@ async def main():
         raise ValueError(f"Unsupported storage: {args.storage}")
 
     if args.provider == 'binance':
-        fetcher = BinanceRatesProvider(
+        provider = BinanceRatesProvider(
             storage=storage,
             currency_pairs=settings.CURRENCY_PAIRS,
             url=settings.BINANCE_API_URL,
@@ -37,7 +37,7 @@ async def main():
     else:
         raise ValueError(f"Unsupported provider: {args.provider}")
 
-    await fetcher.sync_pairs()
+    await provider.sync_pairs()
 
 if __name__ == '__main__':
     asyncio.run(main())

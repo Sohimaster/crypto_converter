@@ -16,18 +16,16 @@ conversions_router = APIRouter(prefix="")
     status_code=status.HTTP_200_OK,
 )
 async def convert(
-    conversion_request: models.ConversionRequests,
+    conversion_request: models.ConversionRequest,
     quotes_client: IQuotesClient = Depends(deps.get_quotes_service),
 ):
     """
-    Ручка конвертирует одну криптовалюту в другую
-
-    :param conversion_request: схема запроса
-    :param quotes_client: FastAPI DI подсасывает quotes клиента
+    :param conversion_request: Request schema
+    :param quotes_client: FastAPI DI gets quotes
     ...
-    :raises QuotesOutdated: курс протух
+    :raises QuotesOutdated
     ...
-    :return: возвращает кол-во конвертированых денег и курс
+    :return: Conversion amount
     :rtype: models.ConversionResponse
     """
     rate = await quotes_client.get_exchange_rate(conversion_request.from_, conversion_request.to)

@@ -25,7 +25,7 @@ class Request(BaseModel):
     pass
 
 
-class ConversionRequests(Request):
+class ConversionRequest(Request):
     from_: str = pydantic.Field(alias="from")
     to: str
     amount: Decimal
