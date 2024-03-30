@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, field_validator, Field
+from pydantic import BaseModel, field_validator
 
 
 class Response(BaseModel):
