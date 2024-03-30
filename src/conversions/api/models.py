@@ -1,6 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 
 import pydantic
+from fastapi.params import Query
 from pydantic import BaseModel, field_serializer
 
 
@@ -26,6 +27,6 @@ class Request(BaseModel):
 
 
 class ConversionRequest(Request):
-    from_: str = pydantic.Field(alias="from")
+    from_: str = pydantic.Field(description="Из какой валюты переводить")
     to: str
     amount: Decimal

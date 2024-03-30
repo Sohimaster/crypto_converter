@@ -1,10 +1,8 @@
-import datetime
-
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from starlette import status
 
-from quote_consumer.api import models
-from quote_consumer.api.exceptions import QuotesOutdated
+from quote_consumer.api import models, deps
+from quote_consumer.services.storage import IQuoteStorage
 
 quote_consumer_router = APIRouter(prefix="")
 
@@ -15,10 +13,9 @@ quote_consumer_router = APIRouter(prefix="")
     status_code=status.HTTP_200_OK,
 )
 async def convert(
-    conversion_request: models.QuoteRequest,
+    quote_request: models.QuoteRequest = Depends(),
+    quotes_storage: IQuoteStorage = Depends(deps.get_quotes_storage),
 ):
-    rate = await quotes_client.get_exchange_rate(conversion_request.from_, conversion_request.to)
-    if datetime.datetime.now() - rate.updated_at > datetime.timedelta(minutes=1):
-        raise QuotesOutdated("Exchange rates are worse than one minute")
-    amount_result = conversion_request.amount / rate.value
-    return models.ConversionResponse(amount=amount_result, rate=rate.value)
+    quote = await quotes_storage.get_quote(quote_request.source_currency, quote_request.target_currency)
+    return models.QuoteResponse(rate=quote.rate, updated_at=quote.updated_at)
+

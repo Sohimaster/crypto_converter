@@ -16,7 +16,7 @@ conversions_router = APIRouter(prefix="")
     status_code=status.HTTP_200_OK,
 )
 async def convert(
-    conversion_request: models.ConversionRequest,
+    conversion_request: models.ConversionRequest = Depends(),
     quotes_client: IQuotesClient = Depends(deps.get_quotes_service),
 ):
     """
@@ -31,5 +31,5 @@ async def convert(
     rate = await quotes_client.get_exchange_rate(conversion_request.from_, conversion_request.to)
     if datetime.datetime.now() - rate.updated_at > datetime.timedelta(minutes=1):
         raise QuotesOutdated("Exchange rates are worse than one minute")
-    amount_result = conversion_request.amount / rate.value
+    amount_result = conversion_request.amount * rate.value
     return models.ConversionResponse(amount=amount_result, rate=rate.value)

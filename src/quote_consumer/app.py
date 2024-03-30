@@ -1,43 +1,29 @@
 import asyncio
-import logging
-import argparse
-import os
 
-from dotenv import load_dotenv
+from fastapi import FastAPI
 
 from config import settings
-from quote_consumer.provider import BinanceRatesProvider
-from quote_consumer.storage import RedisStorage
+from quote_consumer.api.router import api_v1_router
+from quote_consumer.services.provider import ProviderFactory
 
-load_dotenv()
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+app = FastAPI(
+    title=settings.CONVERSIONS_SERVICE_NAME,
+    contact={"name": "Sohi", "tg": "@sohimaster"},
+    description="Description",
+    version="0.0.1",
+)
+
+# routers
+app.include_router(api_v1_router)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='Currency Pair Fetcher and Updater')
-    parser.add_argument('--provider', type=str, required=True, help='Data provider (e.g., "binance")')
-    parser.add_argument('--storage', type=str, required=True, help='Storage option (e.g., "redis")')
-    return parser.parse_args()
+@app.on_event("startup")
+def on_startup():
+    provider = ProviderFactory.get_provider()
+    task = asyncio.create_task(provider.sync_pairs())
+    pass
 
 
-async def main():
-    args = parse_args()
-
-    if args.storage == 'redis':
-        storage = RedisStorage()
-    else:
-        raise ValueError(f"Unsupported storage: {args.storage}")
-
-    if args.provider == 'binance':
-        provider = BinanceRatesProvider(
-            storage=storage,
-            currency_pairs=settings.CURRENCY_PAIRS,
-            url=settings.BINANCE_API_URL,
-        )
-    else:
-        raise ValueError(f"Unsupported provider: {args.provider}")
-
-    await provider.sync_pairs()
-
-if __name__ == '__main__':
-    asyncio.run(main())
+@app.on_event("shutdown")
+def on_shutdown():
+    pass
