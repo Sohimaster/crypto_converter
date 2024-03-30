@@ -49,15 +49,8 @@ This will return a JSON response containing the converted amount and the convers
 
 ## Precision and Rounding
 
-### Decimal Calculations
-This project uses Python's `Decimal` data type for all currency amount calculations, providing high precision arithmetic with a default precision of 28 decimal places. This ensures accuracy during currency conversion calculations, avoiding the rounding errors commonly associated with floating-point arithmetic.
-
-### Rounding
-Only at the final step, when preparing data for the API response, do we round the calculated amounts. For amounts, we round to 6 decimal digits, and for conversion rates, we round to 12 decimal digits. The rounding method employed is `ROUND_HALF_UP`, which is the most commonly used method where numbers are rounded to the nearest value, with halves rounded up.
-
-For example, the conversion rate `0.12345678901234` would be rounded to `0.123456789012` for the API response, ensuring the response data is both accurate and conforms to the specified precision requirements.
-
-This approach, combining high precision internal calculations with precise control over the rounding and
+- **Decimal Calculations**: Uses Python's `Decimal` with default precision of 28 decimal places for accurate currency calculations.
+- **Rounding**: At the API response stage, amounts are rounded to 6 decimal digits, and conversion rates to 12, using the `ROUND_HALF_UP` method.
 
 ## Contributions
 Contributions are welcome! Please feel free to submit a pull request or create an issue for any bugs or feature requests.
