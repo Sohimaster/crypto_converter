@@ -18,8 +18,8 @@ class Request(BaseModel):
 
 
 class QuoteRequest(Request):
-    source_currency: str = Field(to_upper=True)
-    target_currency: str = Field(to_upper=True)
+    source_currency: str
+    target_currency: str
 
     @field_validator('source_currency', 'target_currency', mode='before')
     def convert_to_upper(cls, value: str):
