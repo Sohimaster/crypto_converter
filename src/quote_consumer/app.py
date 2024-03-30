@@ -3,27 +3,24 @@ import asyncio
 from fastapi import FastAPI
 
 from config import settings
+from quote_consumer.api.exception_handlers import base_api_exception_handler
+from quote_consumer.api.exceptions import BaseApiException
 from quote_consumer.api.router import api_v1_router
 from quote_consumer.services.provider import ProviderFactory
 
 app = FastAPI(
     title=settings.CONVERSIONS_SERVICE_NAME,
-    contact={"name": "Sohi", "tg": "@sohimaster"},
     description="Description",
     version="0.0.1",
 )
 
-# routers
 app.include_router(api_v1_router)
+
+# exception handlers
+app.exception_handler(BaseApiException)(base_api_exception_handler)
 
 
 @app.on_event("startup")
 def on_startup():
     provider = ProviderFactory.get_provider()
-    task = asyncio.create_task(provider.sync_pairs())
-    pass
-
-
-@app.on_event("shutdown")
-def on_shutdown():
-    pass
+    asyncio.create_task(provider.sync_pairs())

@@ -8,6 +8,7 @@ from decimal import Decimal
 import redis.asyncio
 
 from config import settings, StorageEnum
+from quote_consumer.api.exceptions import QuoteNotFound
 from quote_consumer.services.dto import Quote
 
 
@@ -37,8 +38,10 @@ class RedisQuoteStorage(IQuoteStorage, metaclass=Singleton):
 
     async def get_quote(self, source_currency: str, target_currency: str) -> Quote:
         value = await self._storage.get(self._get_key(source_currency, target_currency))
+
         if not value:
-            raise
+            raise QuoteNotFound()
+
         value = json.loads(value)
         return Quote(
             source_currency=source_currency,

@@ -1,7 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
 
-import pydantic
-from fastapi.params import Query
 from pydantic import BaseModel, field_serializer
 
 
@@ -20,13 +18,3 @@ class ConversionResponse(Response):
     @field_serializer("rate")
     def rate_serializer(self, value: Decimal):
         return str(value.quantize(Decimal(".000000000000"), rounding=ROUND_HALF_UP))
-
-
-class Request(BaseModel):
-    pass
-
-
-class ConversionRequest(Request):
-    from_: str = pydantic.Field(description="Из какой валюты переводить")
-    to: str
-    amount: Decimal

@@ -8,9 +8,5 @@ class BaseApiException(Exception):
         self.message = message
 
 
-class QuoteOutdated(BaseApiException):
-    code: int = status.HTTP_400_BAD_REQUEST
-
-
 class QuoteNotFound(BaseApiException):
     code: int = status.HTTP_404_NOT_FOUND

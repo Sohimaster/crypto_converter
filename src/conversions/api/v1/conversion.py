@@ -1,35 +1,40 @@
 import datetime
+from decimal import Decimal
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from starlette import status
 
 from conversions.api import models, deps
-from conversions.api.exceptions import QuotesOutdated
+from conversions.api.exceptions import QuoteOutdated
 from conversions.services.quotes import IQuotesClient
 
 conversions_router = APIRouter(prefix="")
 
 
 @conversions_router.get(
-    "/convert",
+    "/conversion",
     response_model=models.ConversionResponse,
     status_code=status.HTTP_200_OK,
 )
-async def convert(
-    conversion_request: models.ConversionRequest = Depends(),
+async def conversion(
+    from_: str = Query(alias='from', description="Source currency"),
+    to: str = Query(description="Target currency"),
+    amount: Decimal = Query(),
     quotes_client: IQuotesClient = Depends(deps.get_quotes_service),
 ):
     """
-    :param conversion_request: Request schema
+    :param from_: Source currency
+    :param to: Target currency
+    :param amount: Amount in source currency to convert
     :param quotes_client: FastAPI DI gets quotes
     ...
-    :raises QuotesOutdated
+    raises QuotesOutdated
     ...
-    :return: Conversion amount
+    :return: Converted amount
     :rtype: models.ConversionResponse
     """
-    rate = await quotes_client.get_exchange_rate(conversion_request.from_, conversion_request.to)
+    rate = await quotes_client.get_exchange_rate(from_, to)
     if datetime.datetime.now() - rate.updated_at > datetime.timedelta(minutes=1):
-        raise QuotesOutdated("Exchange rates are worse than one minute")
-    amount_result = conversion_request.amount * rate.value
+        raise QuoteOutdated("Exchange rates are older than one minute.")
+    amount_result = amount * rate.value
     return models.ConversionResponse(amount=amount_result, rate=rate.value)

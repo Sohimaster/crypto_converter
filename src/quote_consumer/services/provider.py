@@ -25,10 +25,8 @@ class BaseRatesProvider:
         pair_dict = {}
         for pair in pairs.split(","):
             source, target = pair.split(":")
-            original_pair = f"{source}{target}".lower()
-            reverse_pair = f"{target}{source}".lower()
-            pair_dict[original_pair] = {"source": source, "target": target}
-            pair_dict[reverse_pair] = {"source": target, "target": source}
+            pair = f"{source}{target}".lower()
+            pair_dict[pair] = {"source": source, "target": target}
         return pair_dict
 
     def sync_pairs(self):

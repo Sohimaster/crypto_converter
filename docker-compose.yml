@@ -3,3 +3,23 @@ services:
     image: "redis:latest"
     ports:
       - "6379:6379"
+  api:
+    build: .
+    command: python src/main.py api
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - quote-consumer
+  quote-consumer:
+    build: .
+    command: python src/main.py quote-consumer
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis

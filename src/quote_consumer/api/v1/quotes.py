@@ -18,4 +18,3 @@ async def convert(
 ):
     quote = await quotes_storage.get_quote(quote_request.source_currency, quote_request.target_currency)
     return models.QuoteResponse(rate=quote.rate, updated_at=quote.updated_at)
-
