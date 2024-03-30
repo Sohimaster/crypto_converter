@@ -12,7 +12,7 @@ quote_consumer_router = APIRouter(prefix="")
     response_model=models.QuoteResponse,
     status_code=status.HTTP_200_OK,
 )
-async def convert(
+async def get_quote(
     quote_request: models.QuoteRequest = Depends(),
     quotes_storage: IQuoteStorage = Depends(deps.get_quotes_storage),
 ):
