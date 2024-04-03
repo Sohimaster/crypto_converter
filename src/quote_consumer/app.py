@@ -25,7 +25,7 @@ app.exception_handler(RequestValidationError)(validation_exception_handler)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     provider = ProviderFactory.get_provider()
     await asyncio.create_task(provider.sync_pairs())
     yield

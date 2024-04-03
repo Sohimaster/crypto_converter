@@ -28,7 +28,7 @@ class BaseRatesProvider:
             pair_dict[pair] = {"source": source, "target": target}
         return pair_dict
 
-    def sync_pairs(self):
+    async def sync_pairs(self):
         raise NotImplementedError()
 
 

@@ -22,5 +22,5 @@ class QuoteRequest(Request):
     target_currency: str
 
     @field_validator("source_currency", "target_currency", mode="before")
-    def convert_to_upper(cls, value: str):
+    def convert_to_upper(cls, value: str):  # pylint: disable = E0213
         return value.upper()
