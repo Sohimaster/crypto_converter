@@ -7,7 +7,6 @@ import conversions.app
 import quote_consumer.app
 from config import settings
 
-
 logging.basicConfig(level=logging.INFO)
 
 

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import ssl
 from decimal import Decimal
 from typing import Dict
@@ -7,10 +8,8 @@ from typing import Dict
 import websockets
 from websockets import WebSocketException
 
-from config import settings, ProviderEnum
+from config import ProviderEnum, settings
 from quote_consumer.services.storage import IQuoteStorage, StorageFactory
-
-import logging
 
 
 class BaseRatesProvider:

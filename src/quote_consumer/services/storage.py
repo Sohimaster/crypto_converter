@@ -2,12 +2,12 @@ import datetime
 import json
 import logging
 import time
-from abc import ABC, abstractmethod, ABCMeta
+from abc import ABC, ABCMeta, abstractmethod
 from decimal import Decimal
 
 import redis.asyncio
 
-from config import settings, StorageEnum
+from config import StorageEnum, settings
 from quote_consumer.api.exceptions import QuoteNotFound
 from quote_consumer.services.dto import Quote
 

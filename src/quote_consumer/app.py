@@ -5,9 +5,7 @@ from fastapi.exceptions import RequestValidationError
 
 from config import settings
 from quote_consumer.api.exception_handlers import (
-    base_api_exception_handler,
-    validation_exception_handler,
-)
+    base_api_exception_handler, validation_exception_handler)
 from quote_consumer.api.exceptions import BaseApiException
 from quote_consumer.api.router import api_v1_router
 from quote_consumer.services.provider import ProviderFactory

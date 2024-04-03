@@ -1,4 +1,4 @@
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from unittest import mock
 from unittest.mock import AsyncMock
@@ -9,11 +9,11 @@ from starlette.testclient import TestClient
 
 from config import settings
 from conversions.api import deps as conversions_deps
+from conversions.app import app as conversion_app
 from conversions.services.dto import Rate
 from conversions.services.quotes import QuotesClient
 from quote_consumer.api import deps as consumer_deps
 from quote_consumer.app import app as consumer_app
-from conversions.app import app as conversion_app
 from quote_consumer.services.storage import IQuoteStorage
 
 

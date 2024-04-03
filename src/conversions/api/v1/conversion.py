@@ -4,7 +4,7 @@ from decimal import Decimal
 from fastapi import APIRouter, Depends, Query
 from starlette import status
 
-from conversions.api import models, deps
+from conversions.api import deps, models
 from conversions.api.exceptions import QuoteOutdated
 from conversions.services.quotes import IQuotesClient
 
