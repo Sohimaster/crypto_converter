@@ -1,0 +1,351 @@
+[MASTER]
+
+# Specify a configuration file.
+#rcfile=
+
+# Python code to execute, usually for sys.path manipulation such as
+# pygtk.require().
+#init-hook=
+
+# Add files or directories to the blacklist. They should be base names, not
+# paths.
+ignore=CVS,migrations,tests
+
+# Pickle collected data for later comparisons.
+persistent=yes
+
+# List of plugins (as comma separated values of python modules names) to load,
+# usually to register additional checkers.
+load-plugins=
+
+
+[MESSAGES CONTROL]
+
+# Enable the message, report, category or checker with the given id(s). You can
+# either give multiple identifier separated by comma (,) or put this option
+# multiple time. See also the "--disable" option for examples.
+# enable=python3
+
+# Disable the message, report, category or checker with the given id(s). You
+# can either give multiple identifiers separated by comma (,) or put this
+# option multiple times (only on the command line, not in the configuration
+# file where it should appear only once).You can also use "--disable=all" to
+# disable everything first and then reenable specific checks. For example, if
+# you want to run only the similarities checker, you can use "--disable=all
+# --enable=similarities". If you want to run only the classes checker, but have
+# no Warning level messages displayed, use"--disable=all --enable=classes
+# --disable=W"
+
+disable=C0103, # [invalid-name] Used when the name doesn't match the regular
+               # expression associated to its type (constant, variable, class...).
+  W0621,
+  C0111, # [missing-docstring] Used when a module, function, class or method has no docstring.
+         # Some special methods like __init__ doesn't necessary require a docstring.
+
+  C0201, # [consider-iterating-dictionary] Emitted when the keys of a dictionary are iterated
+         # through the .keys() method. It is enough to just iterate through the dictionary itself,
+         # as in "for key in dictionary".
+
+  C0301, # [line-too-long] Used when a line is longer than a given number of characters.
+         # Pycharm and flake8 could handle this better
+
+  C0411, # [wrong-import-order] Used when PEP8 import order is not respected (standard imports first,
+         # then third-party libraries, then local imports)
+
+  C0412, # [ungrouped-imports] Used when imports are not grouped by packages
+
+  C0413, # [wrong-import-position] Used when code and imports are mixed
+
+  C0209, # [consider-using-f-string] Formatting a regular string which could be a f-string. Too many warnings
+  E0401, # Unable to import module
+  E1003, # [bad-super-call] Used when another argument than the current class is given as first argument
+         # of the super builtin. Issues in heimdall viewsets (Asset, MG, Creative) - refactoring required there
+
+  E1133, # [not-an-iterable] Used when a non-iterable value is used in place where iterable is expected
+         # Useless rule. If it's not an iterable then code won't work at all
+
+  E1102, # [not-callable] Used when an object being called has been inferred to a non callable object
+         # Useless rule. If it's not a callable then code won't work at all
+
+  E1101, # [no-member] Used when a variable is accessed for an unexistent member. Django have ton of generated members
+  E1131, # (unsupported-binary-operation)
+
+  R0401, # [cyclic-import] - has unpredictable behavior and generally hard to fix :(
+
+  R0902, # [too-many-instance-attributes] Used when class has too many instance attributes, try to reduce
+         # this to get a simpler (and so easier to use) class.
+
+  R0903, # [too-few-public-methods] Used when class has too few public methods, so be sure it's really worth it.
+
+  R0914, # [too-many-locals] Used when a function or method has too many local variables.
+
+  R1705, # [no-else-return] Used in order to highlight an unnecessary block of code following an if containing
+         # a return statement. As such, it will warn when it encounters an else following a chain of ifs,
+         # all of them containing a return statement.
+
+  R1710, # [inconsistent-return-statements] Either all return statements in a function should return an expression,
+         # or none of them should.
+
+  R1720, # [no-else-raise] Unnecessary “elif” after “raise”. Just useless rule
+
+  R1728, # (consider-using-generator)
+
+  R1735, # (use-dict-literal), AdvertiserSerializer.prepare_heimdall_data] Consider using {} instead of dict(). Just meh
+
+  W0201, # [attribute-defined-outside-init] Used when an instance attribute is defined outside the __init__ method.
+
+  W0212, # [protected-access] Used when a protected member (i.e. class member with a name beginning with an underscore)
+         # is access outside the class or a descendant of the class where it's defined.
+
+  W0221, # [arguments-differ] Used when a method has a different number of arguments than in the implemented
+         # interface or in an overridden method. Many issues in Dataset classes
+
+   W0223, # [abstract-method] Used when an abstract method (i.e. raise NotImplementedError) is not overridden
+         # in concrete class. Some issues with our base serializers
+
+  W0231, # [super-init-not-called] Used when an ancestor class method has an __init__ method
+         # which is not called by a derived class.
+
+  W0511, # [fixme] Used when a warning note as FIXME or XXX is detected.
+
+  W0613, # [unused-argument] Used when a function or method argument is not used.
+         # Issues with pytest fixtures in conftest.py file
+
+  W0703, # [broad-except] Used when an except catches a too general exception, possibly burying unrelated errors.
+  W0719, # (broad-exception-raised)
+
+  W1201, # [logging-not-lazy] Used when a logging statement has a call form of
+         # "logging.<logging method>(format_string % (format_args...))". Such calls should leave string interpolation
+         # to the logging method itself and be written "logging.<logging method>(format_string, format_args...)"
+         # so that the program may avoid incurring the cost of the interpolation in those cases
+         # in which no message will be logged. For more, see http://www.python.org/dev/peps/pep-0282/.
+
+  W1202, # [logging-format-interpolation] Used when a logging statement has a call form
+         # of "logging.<logging method>(format_string.format(format_args...))". Such calls should
+         # use % formatting instead, but leave interpolation to the logging function by passing the parameters as arguments.
+
+  R1702, # Too many nested blocks
+  R0801, # R0801(duplicate-code)
+  W1203, # logging-fstring-interpolation. Use lazy % or .format() or % formatting in logging functions
+  W1309, # f-string-without-interpolation Using an f-string that does not have any interpolated variables
+  W1518, # (method-cache-max-size-none)
+  W3101, # (missing-timeout)
+  W1116  # Bug: https://github.com/PyCQA/pylint/issues/3507 remove after resolved
+
+[REPORTS]
+
+# Set the output format. Available formats are text, parseable, colorized, msvs
+# (visual studio) and html. You can also give a reporter class, eg
+# mypackage.mymodule.MyReporterClass.
+output-format=text
+
+# Tells whether to display a full report or only the messages
+reports=no
+
+# Python expression which should return a note less than 10 (10 is the highest
+# note). You have access to the variables errors warning, statement which
+# respectively contain the number of errors / warnings messages and the total
+# number of statements analyzed. This is used by the global evaluation report
+# (RP0004).
+evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
+
+# Template used to display messages. This is a python new-style format string
+# used to format the message information. See doc for all details
+msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
+
+
+[SIMILARITIES]
+
+# Minimum lines number of a similarity.
+min-similarity-lines=4
+
+# Ignore comments when computing similarities.
+ignore-comments=yes
+
+# Ignore docstrings when computing similarities.
+ignore-docstrings=yes
+
+# Ignore imports when computing similarities.
+ignore-imports=no
+
+
+[FORMAT]
+
+# Maximum number of characters on a single line.
+max-line-length=120
+
+# Regexp for a line that is allowed to be longer than the limit.
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+
+# Allow the body of an if to be on the same line as the test if there is no
+# else.
+single-line-if-stmt=no
+
+# Maximum number of lines in a module
+# INCREASED FROM 1000 TO 5000
+max-module-lines=5000
+
+# String used as indentation unit. This is usually " " (4 spaces) or "\t" (1
+# tab).
+indent-string='    '
+
+
+[BASIC]
+
+# Regular expression which should only match correct module names
+module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
+
+# Regular expression which should only match correct module level names
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+# Regular expression which should only match correct class names
+class-rgx=[A-Z_][a-zA-Z0-9]+$
+
+# Regular expression which should only match correct function names
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression which should only match correct method names
+method-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression which should only match correct instance attribute names
+attr-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression which should only match correct argument names
+argument-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression which should only match correct variable names
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression which should only match correct attribute names in class
+# bodies
+class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
+
+# Regular expression which should only match correct list comprehension /
+# generator expression variable names
+inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
+
+# Good variable names which should always be accepted, separated by a comma
+good-names=i,j,k,ex,Run,_
+
+# Bad variable names which should always be refused, separated by a comma
+bad-names=foo,bar,baz,toto,tutu,tata
+
+# Regular expression which should only match function or class names that do
+# not require a docstring.
+no-docstring-rgx=__.*__
+
+# Minimum line length for functions/classes that require docstrings, shorter
+# ones are exempt.
+docstring-min-length=-1
+
+
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+notes=FIXME,XXX,TODO
+
+
+[TYPECHECK]
+
+# Tells whether missing members accessed in mixin class should be ignored. A
+# mixin class is detected if its name ends with "mixin" (case insensitive).
+ignore-mixin-members=yes
+
+# List of classes names for which member attributes should not be checked
+# (useful for classes with attributes dynamically set).
+ignored-classes=SQLObject
+
+
+# List of members which are set dynamically and missed by pylint inference
+# system, and so shouldn't trigger E0201 when accessed. Python regular
+# expressions are accepted.
+generated-members=REQUEST,acl_users,aq_parent,objects,DoesNotExist
+
+
+[VARIABLES]
+
+# Tells whether we should check for unused import in __init__ files.
+init-import=no
+
+# A regular expression matching the beginning of the name of dummy variables
+# (i.e. not used).
+dummy-variables-rgx=(_+[a-zA-Z0-9_]*?$)|dummy
+
+# List of additional names supposed to be defined in builtins. Remember that
+# you should avoid to define new builtins when possible.
+additional-builtins=
+
+
+[CLASSES]
+
+# List of method names used to declare (i.e. assign) instance attributes.
+defining-attr-methods=__init__,__new__,setUp
+
+# List of valid names for the first argument in a class method.
+valid-classmethod-first-arg=cls
+
+# List of valid names for the first argument in a metaclass class method.
+valid-metaclass-classmethod-first-arg=mcs
+
+
+[IMPORTS]
+
+# Deprecated modules which should not be used, separated by a comma
+deprecated-modules=regsub,TERMIOS,Bastion,rexec
+
+# Create a graph of every (i.e. internal and external) dependencies in the
+# given file (report RP0402 must not be disabled)
+import-graph=
+
+# Create a graph of external dependencies in the given file (report RP0402 must
+# not be disabled)
+ext-import-graph=
+
+# Create a graph of internal dependencies in the given file (report RP0402 must
+# not be disabled)
+int-import-graph=
+
+
+[DESIGN]
+
+# Maximum number of arguments for function / method
+max-args=7
+
+# Argument names that match this expression will be ignored. Default to name
+# with leading underscore
+ignored-argument-names=_.*
+
+# Maximum number of locals for function / method body
+max-locals=15
+
+# Maximum number of return / yield for function / method body
+# INCREASED FROM 6 TO 8
+max-returns=8
+
+# Maximum number of branch for function / method body
+max-branches=12
+
+# Maximum number of statements in function / method body
+# INCREASED FROM 50 TO 80
+max-statements=80
+
+# Maximum number of parents for a class (see R0901).
+# Default is 7
+max-parents=25
+
+# Maximum number of attributes for a class (see R0902).
+max-attributes=7
+
+# Minimum number of public methods for a class (see R0903).
+min-public-methods=2
+
+# Maximum number of public methods for a class (see R0904).
+# INCREASED FROM 20 TO 36
+max-public-methods=36
+
+
+[EXCEPTIONS]
+
+# Exceptions that will emit a warning when being caught. Defaults to
+# "Exception"
+overgeneral-exceptions=builtins.Exception
