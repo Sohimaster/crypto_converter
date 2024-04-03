@@ -26,16 +26,12 @@ maintainers = [
   {name = "Sohimaster", email = "sohimaster@ya.ru"},
 ]
 description = "Provides an API for converting amounts between different cryptocurrencies."
-readme = "README.md"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = [
   "tests"
 ]
-
-[tool.setuptools.packages.find]
-where = ["src"]
 
 [project.optional-dependencies]
 lint = [

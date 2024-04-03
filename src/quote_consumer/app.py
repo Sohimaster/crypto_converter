@@ -15,7 +15,7 @@ from quote_consumer.services.provider import ProviderFactory
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     provider = ProviderFactory.get_provider()
-    await asyncio.create_task(provider.sync_pairs())
+    asyncio.create_task(provider.sync_pairs())  # noqa
     yield
 
 

@@ -23,3 +23,5 @@ services:
       - PYTHONUNBUFFERED=1
     depends_on:
       - redis
+    ports:
+      - "8080"
