@@ -1,4 +1,5 @@
-![pylint]()
+![pytest workflow](https://github.com/sohimaster/crypto-converter/actions/workflows/pytest.yml/badge.svg)
+![Pylint workflow](https://github.com/sohimaster/crypto-converter/actions/workflows/pylint.yml/badge.svg)
 
 # Crypto Converter
 
