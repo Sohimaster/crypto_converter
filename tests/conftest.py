@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 from starlette import testclient
+from starlette.testclient import TestClient
 
 from config import settings
 from conversions.api import deps
@@ -16,7 +17,7 @@ from conversions.app import app as conversion_app
 
 @pytest.fixture(scope="session")
 def conversion_api_client(mock_quotes_client) -> testclient.TestClient:
-    conversion_app.dependency_overrides[deps.get_quotes_service] = mock_quotes_client
+    conversion_app.dependency_overrides[deps.get_quotes_service] = lambda: mock_quotes_client
     test_client = testclient.TestClient(conversion_app)
     return test_client
 
@@ -28,20 +29,11 @@ def quote_consumer_api_client() -> testclient.TestClient:
 
 
 @pytest.fixture(scope='session')
-def mock_quote_consumer_client():
-    mock_client = mock.create_autospec(QuotesClient, quotes_url=settings.QUOTES_BASE_URL)
-    return mock_client
+def mock_quotes_client():
+    return mock.create_autospec(QuotesClient)
 
 
 @pytest.fixture(scope='session')
-async def mock_quotes_client():
-    # Create an instance of QuotesClient to mock.
-    mock_client = QuotesClient(quotes_url="http://example.com")
-
-    # Use AsyncMock to replace the `get_exchange_rate` method with an asynchronous mock.
-    mock_client.get_exchange_rate = AsyncMock(return_value=Rate(
-        value=Decimal("1.23"),  # Example exchange rate value.
-        updated_at=datetime.now(timezone.utc)  # Use current time for the "updated_at" value.
-    ))
-
+def mock_quote_consumer_client():
+    mock_client = mock.create_autospec(QuotesClient, quotes_url=settings.QUOTES_BASE_URL)
     return mock_client
