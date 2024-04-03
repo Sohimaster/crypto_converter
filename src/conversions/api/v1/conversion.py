@@ -17,7 +17,7 @@ conversions_router = APIRouter(prefix="")
     status_code=status.HTTP_200_OK,
 )
 async def conversion(
-    from_: str = Query(alias='from', description="Source currency"),
+    from_: str = Query(alias="from", description="Source currency"),
     to: str = Query(description="Target currency"),
     amount: Decimal = Query(),
     quotes_client: IQuotesClient = Depends(deps.get_quotes_service),

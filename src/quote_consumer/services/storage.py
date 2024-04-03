@@ -40,7 +40,7 @@ class RedisQuoteStorage(IQuoteStorage, metaclass=Singleton):
         value = await self._storage.get(self._get_key(source_currency, target_currency))
 
         if not value:
-            raise QuoteNotFound(f'Quote {source_currency}:{target_currency} is not found.')
+            raise QuoteNotFound(f"Quote {source_currency}:{target_currency} is not found.")
 
         value = json.loads(value)
         return Quote(
@@ -52,7 +52,11 @@ class RedisQuoteStorage(IQuoteStorage, metaclass=Singleton):
 
     async def set_quote(self, source_currency: str, target_currency: str, rate: Decimal):
         value = json.dumps({"rate": str(rate), "timestamp": time.time()})
-        await self._storage.setex(self._get_key(source_currency, target_currency), self._expiration_time, value)
+        await self._storage.setex(
+            self._get_key(source_currency, target_currency),
+            self._expiration_time,
+            value,
+        )
         logging.info(f"Saved to redis: {source_currency} -> {target_currency}. Rate: {rate}")
 
     @staticmethod

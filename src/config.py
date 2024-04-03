@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     QUOTES_API_HOST: str = "quote-consumer"
     QUOTES_API_PORT: int = 8080
-    QUOTES_BASE_URL: str = f'http://{QUOTES_API_HOST}:{QUOTES_API_PORT}/api/v1'
+    QUOTES_BASE_URL: str = f"http://{QUOTES_API_HOST}:{QUOTES_API_PORT}/api/v1"
     BINANCE_API_URL: str
     CURRENCY_PAIRS: str
     REDIS_HOST: str = "redis"

@@ -24,7 +24,10 @@ class QuotesClient(IQuotesClient):
             response = await client.get("quote", params=params)
 
             if response.status_code == status.HTTP_404_NOT_FOUND:
-                raise QuoteNotFound(f'Currency pair {from_}:{to} does not exist.')
+                raise QuoteNotFound(f"Currency pair {from_}:{to} does not exist.")
 
             response_body = response.json()
-            return Rate(value=Decimal(response_body["rate"]), updated_at=response_body["updated_at"])
+            return Rate(
+                value=Decimal(response_body["rate"]),
+                updated_at=response_body["updated_at"],
+            )

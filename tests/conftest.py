@@ -24,7 +24,7 @@ def conversion_api_client(mock_quotes_client) -> testclient.TestClient:
     return test_client
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def mock_quotes_client():
     return mock.create_autospec(QuotesClient)
 
@@ -36,6 +36,6 @@ def quote_consumer_api_client(mock_quotes_storage) -> testclient.TestClient:
     return test_client
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def mock_quotes_storage():
     return mock.create_autospec(IQuoteStorage)

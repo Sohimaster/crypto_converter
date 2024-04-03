@@ -43,7 +43,13 @@ class BinanceRatesProvider(BaseRatesProvider):
 
                 async with websockets.connect(self.url, ssl=ssl_context) as websocket:
                     for pair in self.currency_pairs:
-                        subscribe_message = json.dumps({"method": "SUBSCRIBE", "params": [f"{pair}@ticker"], "id": 1})
+                        subscribe_message = json.dumps(
+                            {
+                                "method": "SUBSCRIBE",
+                                "params": [f"{pair}@ticker"],
+                                "id": 1,
+                            }
+                        )
                         await websocket.send(subscribe_message)
                         await asyncio.sleep(1)
                         logging.info(f"Subscribed to {pair}@ticker")
@@ -59,7 +65,11 @@ class BinanceRatesProvider(BaseRatesProvider):
                             source = pair_data["source"]
                             target = pair_data["target"]
                             rate = Decimal(message_data["data"]["c"])
-                            await self.storage.set_quote(source_currency=source, target_currency=target, rate=rate)
+                            await self.storage.set_quote(
+                                source_currency=source,
+                                target_currency=target,
+                                rate=rate,
+                            )
                             logging.info(f"Updated {source} -> {target}. Rate: {rate}")
             except WebSocketException as e:
                 logging.warning(f"WebSocket issue: {e}. Reconnecting...")
