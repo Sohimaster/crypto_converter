@@ -11,10 +11,19 @@ from quote_consumer.api.exceptions import BaseApiException
 from quote_consumer.api.router import api_v1_router
 from quote_consumer.services.provider import ProviderFactory
 
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    provider = ProviderFactory.get_provider()
+    await asyncio.create_task(provider.sync_pairs())
+    yield
+
+
 app = FastAPI(
     title=settings.CONVERSIONS_SERVICE_NAME,
     description="Description",
     version="0.0.1",
+    lifespan=lifespan
 )
 
 app.include_router(api_v1_router)
@@ -22,10 +31,3 @@ app.include_router(api_v1_router)
 # exception handlers
 app.exception_handler(BaseApiException)(base_api_exception_handler)
 app.exception_handler(RequestValidationError)(validation_exception_handler)
-
-
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    provider = ProviderFactory.get_provider()
-    await asyncio.create_task(provider.sync_pairs())
-    yield
