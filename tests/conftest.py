@@ -8,23 +8,19 @@ from starlette import testclient
 from starlette.testclient import TestClient
 
 from config import settings
-from conversions.api import deps
+from conversions.api import deps as conversions_deps
 from conversions.services.dto import Rate
 from conversions.services.quotes import QuotesClient
+from quote_consumer.api import deps as consumer_deps
 from quote_consumer.app import app as consumer_app
 from conversions.app import app as conversion_app
+from quote_consumer.services.storage import IQuoteStorage
 
 
 @pytest.fixture(scope="session")
 def conversion_api_client(mock_quotes_client) -> testclient.TestClient:
-    conversion_app.dependency_overrides[deps.get_quotes_service] = lambda: mock_quotes_client
+    conversion_app.dependency_overrides[conversions_deps.get_quotes_service] = lambda: mock_quotes_client
     test_client = testclient.TestClient(conversion_app)
-    return test_client
-
-
-@pytest.fixture(scope="session")
-def quote_consumer_api_client() -> testclient.TestClient:
-    test_client = testclient.TestClient(consumer_app)
     return test_client
 
 
@@ -33,7 +29,13 @@ def mock_quotes_client():
     return mock.create_autospec(QuotesClient)
 
 
+@pytest.fixture(scope="session")
+def quote_consumer_api_client(mock_quotes_storage) -> testclient.TestClient:
+    consumer_app.dependency_overrides[consumer_deps.get_quotes_storage] = lambda: mock_quotes_storage
+    test_client = testclient.TestClient(consumer_app)
+    return test_client
+
+
 @pytest.fixture(scope='session')
-def mock_quote_consumer_client():
-    mock_client = mock.create_autospec(QuotesClient, quotes_url=settings.QUOTES_BASE_URL)
-    return mock_client
+def mock_quotes_storage():
+    return mock.create_autospec(IQuoteStorage)

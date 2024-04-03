@@ -40,7 +40,7 @@ class RedisQuoteStorage(IQuoteStorage, metaclass=Singleton):
         value = await self._storage.get(self._get_key(source_currency, target_currency))
 
         if not value:
-            raise QuoteNotFound()
+            raise QuoteNotFound(f'Quote {source_currency}:{target_currency} is not found.')
 
         value = json.loads(value)
         return Quote(

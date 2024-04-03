@@ -1,53 +1,50 @@
-from datetime import datetime, timedelta
-from decimal import Decimal
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 from starlette import status
 
-from conversions.services.dto import Rate
+from quote_consumer.api.exceptions import QuoteNotFound
+from quote_consumer.services.dto import Quote
 
 
-def test_conversion_success(mock_quotes_client, conversion_api_client):
-    mock_quotes_client.get_exchange_rate = AsyncMock(return_value=Rate(
-        value=Decimal("1.23"),
-        updated_at=datetime.now(),
-    ))
+def test_quote_found_success(mock_quotes_storage, quote_consumer_api_client):
+    quote = Quote(
+        source_currency='USDT',
+        target_currency='BTC',
+        rate=1.3,
+        updated_at=datetime.now()
+    )
+    mock_quotes_storage.get_quote = AsyncMock(return_value=quote)
     params = {
-        'from': 'USDT',
-        'to': 'BTC',
-        'amount': 1000,
+        'source_currency': 'USDT',
+        'target_currency': 'BTC',
     }
 
-    response = conversion_api_client.get(url='api/v1/conversion', params=params)
+    response = quote_consumer_api_client.get(url='api/v1/quote', params=params)
 
     assert response.status_code == status.HTTP_200_OK, response.json()
+    assert response.json() == quote.model_dump(mode='json', exclude={'source_currency', 'target_currency'})
 
 
-def test_conversion_rates_outdated_fail(mock_quotes_client, conversion_api_client):
-    mock_quotes_client.get_exchange_rate = AsyncMock(return_value=Rate(
-        value=Decimal("1.23"),
-        updated_at=datetime.now() - timedelta(minutes=1),
-    ))
+def test_quote_not_found_fail(mock_quotes_storage, quote_consumer_api_client):
+    mock_quotes_storage.get_quote = AsyncMock(side_effect=QuoteNotFound('Quote USDT:BTC is not found.'))
     params = {
-        'from': 'USDT',
-        'to': 'BTC',
-        'amount': 1000,
+        'source_currency': 'USDT',
+        'target_currency': 'BTC',
     }
 
-    response = conversion_api_client.get(url='api/v1/conversion', params=params)
+    response = quote_consumer_api_client.get(url='api/v1/quote', params=params)
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST, response.json()
-    assert response.json() == {"message": "Exchange rates are older than one minute."}
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
+    assert response.json() == {'message': 'Quote USDT:BTC is not found.'}
 
 
-def test_conversion_schema_fail(conversion_api_client):
+def test_quote_schema_fail(quote_consumer_api_client):
     params = {
-        'bad_param': 'USDT',
-        'to': 'BTC',
-        'amount': 'str',
+        'target_currency': 'BTC',
     }
 
-    response = conversion_api_client.get(url='api/v1/conversion', params=params)
+    response = quote_consumer_api_client.get(url='api/v1/quote', params=params)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.json()
-    assert response.json() == {'amount': 'Input should be a valid decimal', 'from': 'Field required'}
+    assert response.json() == {'source_currency': 'Field required'}
