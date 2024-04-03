@@ -5,12 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 from starlette import testclient
-from starlette.testclient import TestClient
 
-from config import settings
 from conversions.api import deps as conversions_deps
 from conversions.app import app as conversion_app
-from conversions.services.dto import Rate
 from conversions.services.quotes import QuotesClient
 from quote_consumer.api import deps as consumer_deps
 from quote_consumer.app import app as consumer_app

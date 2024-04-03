@@ -1,4 +1,5 @@
 import asyncio
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
@@ -23,7 +24,8 @@ app.exception_handler(BaseApiException)(base_api_exception_handler)
 app.exception_handler(RequestValidationError)(validation_exception_handler)
 
 
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     provider = ProviderFactory.get_provider()
-    asyncio.create_task(provider.sync_pairs())
+    await asyncio.create_task(provider.sync_pairs())
+    yield
