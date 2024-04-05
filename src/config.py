@@ -9,6 +9,7 @@ class StorageEnum(enum.Enum):
 
 class ProviderEnum(enum.Enum):
     BINANCE = "binance"
+    COINBASE = "coinbase"
 
 
 class Settings(BaseSettings):
@@ -20,12 +21,13 @@ class Settings(BaseSettings):
     QUOTES_API_PORT: int = 8080
     QUOTES_BASE_URL: str = f"http://{QUOTES_API_HOST}:{QUOTES_API_PORT}/api/v1"
     BINANCE_API_URL: str
+    COINBASE_API_URL: str
     CURRENCY_PAIRS: str
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
     REDIS_EXPIRATION_TIME: int = 604800  # 7 days
     STORAGE: StorageEnum = StorageEnum.REDIS
-    PROVIDER: ProviderEnum = ProviderEnum.BINANCE
+    PROVIDER: ProviderEnum = ProviderEnum.COINBASE
 
     model_config = SettingsConfigDict(env_file=".env")
 

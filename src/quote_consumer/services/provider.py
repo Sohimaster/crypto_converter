@@ -91,9 +91,69 @@ class BinanceRatesProvider(BaseRatesProvider):
                 break
 
 
+class CoinbaseRatesProvider(BaseRatesProvider):
+    async def _subscribe(self, websocket):
+        product_ids = [f"{self.currency_pairs[pair]['source']}-{self.currency_pairs[pair]['target']}" for pair in
+                       self.currency_pairs]
+
+        subscribe_message = json.dumps({
+            "type": "subscribe",
+            "channels": [
+                {"name": "ticker", "product_ids": product_ids},
+                "level2",
+                "heartbeat"
+            ]
+        })
+        logging.info(f'Message {subscribe_message}')
+        await websocket.send(subscribe_message)
+        response = await websocket.recv()
+        logging.info(f"Subscription response: {response}")
+
+    def _extract_data_from_stream(self, message_data):
+        if message_data.get('type') != 'ticker':
+            return None, None, None
+
+        # Coinbase provides the pair in the 'product_id' field
+        pair = message_data["product_id"]
+        source, target = pair.split("-")
+        rate = Decimal(message_data["price"])
+        return source, target, rate
+
+    async def sync_pairs(self):
+        while True:
+            try:
+                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = ssl.CERT_NONE
+
+                async with websockets.connect(self.url, ssl=ssl_context) as websocket:
+                    await self._subscribe(websocket)
+
+                    while True:
+                        message = await websocket.recv()
+                        message_data = json.loads(message)
+                        if message_data.get('type') == 'ticker':
+                            source, target, rate = self._extract_data_from_stream(message_data)
+                            if source and target:
+                                await self.storage.set_quote(source_currency=source, target_currency=target, rate=rate)
+                                logging.info(f"Updated {source}-{target}. Rate: {rate}")
+
+            except WebSocketException as e:
+                logging.warning(f"WebSocket issue: {e}. Reconnecting...")
+                continue
+            except asyncio.exceptions.CancelledError:
+                logging.info("Asyncio task cancelled. Exiting...")
+                break
+            except Exception as e:
+                logging.error(f"An unexpected error occurred: {e}. Stopping...")
+                break
+
+
 class ProviderFactory:
     @classmethod
     def get_provider(cls):
         storage = StorageFactory.get_storage()
         if settings.PROVIDER == ProviderEnum.BINANCE:
             return BinanceRatesProvider(settings.BINANCE_API_URL, settings.CURRENCY_PAIRS, storage)
+        if settings.PROVIDER == ProviderEnum.COINBASE:
+            return CoinbaseRatesProvider(settings.COINBASE_API_URL, settings.CURRENCY_PAIRS, storage)
