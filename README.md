@@ -47,8 +47,18 @@ This will return a JSON response containing the converted amount and the convers
 - Uses the latest available quotes from the Quote Consumer.
 
 ### Quote Consumer
-- Subscribes to quotes from cryptocurrency exchanges (e.g., Binance) and saves them into storage.
+- Subscribes to quotes from cryptocurrency exchanges (e.g., Binance/Coinbase) and saves them into storage.
 - Updates the stored quotes in real time using websockets and removes quotes older than 7 days.
+
+## Switching Between Exchange APIs
+The Crypto Converter project supports fetching real-time cryptocurrency quotes from two major exchange APIs: Binance and Coinbase. By default, the project is configured to use Coinbase as the primary source for cryptocurrency quotes.
+
+To switch between the Binance and Coinbase APIs, you can modify the `PROVIDER` variable in the `.env` file. Here’s how:
+
+- To use **Binance** for fetching quotes, set `PROVIDER=binance` in your `.env` file.
+- To use **Coinbase** (the default setting), ensure `PROVIDER=coinbase` is set in your `.env` file, or simply remove the setting from .env file.
+
+After updating the `.env` file, restart the Crypto Converter services for the changes to take effect. This can be done by running `docker-compose down` followed by `docker-compose up` in the project root directory.
 
 ## Precision and Rounding
 
