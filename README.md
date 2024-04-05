@@ -13,7 +13,7 @@ Crypto Converter is a project designed to provide an API for converting amounts 
 - Docker Compose
 
 ### Configuration
-Both components are configurable using environment variables. Configuration details such as API keys (if needed) and other preferences should be set in the `.env` file.
+Both components are configurable using environment variables. Configuration details should be set in the `.env` file.
 
 ### Running the Project
 1. Clone the repository to your local machine.
