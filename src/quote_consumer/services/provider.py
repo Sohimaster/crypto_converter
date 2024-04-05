@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import Dict
 
 from config import ProviderEnum, settings
+from quote_consumer.api.exceptions import RetryException, StopException
 from quote_consumer.services.storage import IQuoteStorage, StorageFactory
 from quote_consumer.services.websocket_manager import WebSocketConnectionManager
 
@@ -53,24 +54,29 @@ class BinanceRatesProvider(BaseRatesProvider):
 
     async def sync_pairs(self):
         while True:
-            async with WebSocketConnectionManager(self.url) as websocket:
-                for pair in self.currency_pairs:
-                    await self._subscribe(pair, websocket)
+            try:
+                async with WebSocketConnectionManager(self.url) as websocket:
+                    for pair in self.currency_pairs:
+                        await self._subscribe(pair, websocket)
 
-                while True:
-                    message = await websocket.recv()
-                    message_data = json.loads(message)
-                    stream = message_data.get("stream", "")
-                    await asyncio.sleep(1)
+                    while True:
+                        message = await websocket.recv()
+                        message_data = json.loads(message)
+                        stream = message_data.get("stream", "")
+                        await asyncio.sleep(1)
 
-                    if stream:
-                        source, target, rate = self._extract_data_from_stream(stream, message_data)
-                        await self.storage.set_quote(
-                            source_currency=source,
-                            target_currency=target,
-                            rate=rate,
-                        )
-                        logging.info(f"Updated {source} -> {target}. Rate: {rate}")
+                        if stream:
+                            source, target, rate = self._extract_data_from_stream(stream, message_data)
+                            await self.storage.set_quote(
+                                source_currency=source,
+                                target_currency=target,
+                                rate=rate,
+                            )
+                            logging.info(f"Updated {source} -> {target}. Rate: {rate}")
+            except RetryException:
+                continue
+            except StopException:
+                break
 
 
 class CoinbaseRatesProvider(BaseRatesProvider):
@@ -104,17 +110,21 @@ class CoinbaseRatesProvider(BaseRatesProvider):
 
     async def sync_pairs(self):
         while True:
-            async with WebSocketConnectionManager(self.url) as websocket:
-                await self._subscribe(websocket)
-
-                while True:
-                    message = await websocket.recv()
-                    message_data = json.loads(message)
-                    if message_data.get('type') == 'ticker':
-                        source, target, rate = self._extract_data_from_stream(message_data)
-                        if source and target:
-                            await self.storage.set_quote(source_currency=source, target_currency=target, rate=rate)
-                            logging.info(f"Updated {source}-{target}. Rate: {rate}")
+            try:
+                async with WebSocketConnectionManager(self.url) as websocket:
+                    await self._subscribe(websocket)
+                    while True:
+                        message = await websocket.recv()
+                        message_data = json.loads(message)
+                        if message_data.get('type') == 'ticker':
+                            source, target, rate = self._extract_data_from_stream(message_data)
+                            if source and target:
+                                await self.storage.set_quote(source_currency=source, target_currency=target, rate=rate)
+                                logging.info(f"Updated {source}-{target}. Rate: {rate}")
+            except RetryException:
+                continue
+            except StopException:
+                break
 
 
 class ProviderFactory:

@@ -10,3 +10,13 @@ class BaseApiException(Exception):
 
 class QuoteNotFound(BaseApiException):
     code: int = status.HTTP_404_NOT_FOUND
+
+
+class RetryException(Exception):
+    """Exception indicating the operation should retry."""
+    pass
+
+
+class StopException(Exception):
+    """Exception indicating the operation should stop."""
+    pass

@@ -4,6 +4,8 @@ import ssl
 import websockets
 from websockets.exceptions import WebSocketException
 
+from quote_consumer.api.exceptions import StopException, RetryException
+
 
 class WebSocketConnectionManager:
     def __init__(self, url: str):
@@ -19,7 +21,7 @@ class WebSocketConnectionManager:
             return self.websocket
         except WebSocketException as e:
             logging.warning(f"WebSocket issue during connection: {e}.")
-            raise e
+            raise RetryException()
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self.websocket:
@@ -27,9 +29,10 @@ class WebSocketConnectionManager:
         if exc_type:
             if exc_type == WebSocketException:
                 logging.warning(f"WebSocket issue: {exc_val}.")
+                raise RetryException()
             elif exc_type == asyncio.exceptions.CancelledError:
                 logging.error("Asyncio task cancelled.")
-                raise exc_val
+                raise StopException()
             else:
                 logging.error(f"An unexpected error occurred: {exc_val}. Stopping...")
-                raise exc_val
+                raise StopException()
