@@ -93,8 +93,10 @@ class BinanceRatesProvider(BaseRatesProvider):
 
 class CoinbaseRatesProvider(BaseRatesProvider):
     async def _subscribe(self, websocket):
-        product_ids = [f"{self.currency_pairs[pair]['source']}-{self.currency_pairs[pair]['target']}" for pair in
-                       self.currency_pairs.keys()]
+        product_ids = [
+            f"{pair_data['source']}-{pair_data['target']}"
+            for pair, pair_data in self.currency_pairs.items()
+        ]
 
         subscribe_message = json.dumps({
             "type": "subscribe",
