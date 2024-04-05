@@ -2,9 +2,7 @@
 ![Pylint workflow](https://github.com/Sohimaster/crypto_converter/actions/workflows/pylint.yml/badge.svg)
 
 # Crypto Converter
-
-## Overview
-Crypto Converter is a project designed to provide an API for converting amounts between different cryptocurrencies using HTTP JSON API. It does not perform actual currency operations/transfers but calculates the conversion based on current quotes. The project consists of two main components running as separate processes: the Currency Conversion API and the Quote Consumer.
+Crypto Converter is a project designed to provide an API for converting amounts between cryptocurrencies using HTTP JSON API. It does not perform actual currency operations/transfers but calculates the conversion based on current quotes. The project consists of two main components running as separate processes: the Currency Conversion API and the Quote Consumer.
 
 ## Getting Started
 
