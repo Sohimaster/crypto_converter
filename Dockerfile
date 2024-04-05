@@ -6,4 +6,3 @@ RUN pip install -e .
 COPY . /app/
 
 ENV PYTHONUNBUFFERED=1
-CMD ["python", "src/main.py"]
