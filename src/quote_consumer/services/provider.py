@@ -1,15 +1,12 @@
 import asyncio
 import json
 import logging
-import ssl
 from decimal import Decimal
 from typing import Dict
 
-import websockets
-from websockets import WebSocketException
-
 from config import ProviderEnum, settings
 from quote_consumer.services.storage import IQuoteStorage, StorageFactory
+from quote_consumer.services.websocket_manager import WebSocketConnectionManager
 
 
 class BaseRatesProvider:
@@ -56,39 +53,24 @@ class BinanceRatesProvider(BaseRatesProvider):
 
     async def sync_pairs(self):
         while True:
-            try:
-                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
+            async with WebSocketConnectionManager(self.url) as websocket:
+                for pair in self.currency_pairs:
+                    await self._subscribe(pair, websocket)
 
-                async with websockets.connect(self.url, ssl=ssl_context) as websocket:
-                    for pair in self.currency_pairs:
-                        await self._subscribe(pair, websocket)
+                while True:
+                    message = await websocket.recv()
+                    message_data = json.loads(message)
+                    stream = message_data.get("stream", "")
+                    await asyncio.sleep(1)
 
-                    while True:
-                        message = await websocket.recv()
-                        message_data = json.loads(message)
-                        stream = message_data.get("stream", "")
-                        await asyncio.sleep(1)
-
-                        if stream:
-                            source, target, rate = self._extract_data_from_stream(stream, message_data)
-                            await self.storage.set_quote(
-                                source_currency=source,
-                                target_currency=target,
-                                rate=rate,
-                            )
-                            logging.info(f"Updated {source} -> {target}. Rate: {rate}")
-
-            except WebSocketException as e:
-                logging.warning(f"WebSocket issue: {e}. Reconnecting...")
-                continue
-            except asyncio.exceptions.CancelledError:
-                logging.info("Asyncio task cancelled. Exiting...")
-                break
-            except Exception as e:
-                logging.error(f"An unexpected error occurred: {e}. Stopping...")
-                break
+                    if stream:
+                        source, target, rate = self._extract_data_from_stream(stream, message_data)
+                        await self.storage.set_quote(
+                            source_currency=source,
+                            target_currency=target,
+                            rate=rate,
+                        )
+                        logging.info(f"Updated {source} -> {target}. Rate: {rate}")
 
 
 class CoinbaseRatesProvider(BaseRatesProvider):
@@ -123,32 +105,17 @@ class CoinbaseRatesProvider(BaseRatesProvider):
 
     async def sync_pairs(self):
         while True:
-            try:
-                ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = ssl.CERT_NONE
+            async with WebSocketConnectionManager(self.url) as websocket:
+                await self._subscribe(websocket)
 
-                async with websockets.connect(self.url, ssl=ssl_context) as websocket:
-                    await self._subscribe(websocket)
-
-                    while True:
-                        message = await websocket.recv()
-                        message_data = json.loads(message)
-                        if message_data.get('type') == 'ticker':
-                            source, target, rate = self._extract_data_from_stream(message_data)
-                            if source and target:
-                                await self.storage.set_quote(source_currency=source, target_currency=target, rate=rate)
-                                logging.info(f"Updated {source}-{target}. Rate: {rate}")
-
-            except WebSocketException as e:
-                logging.warning(f"WebSocket issue: {e}. Reconnecting...")
-                continue
-            except asyncio.exceptions.CancelledError:
-                logging.info("Asyncio task cancelled. Exiting...")
-                break
-            except Exception as e:
-                logging.error(f"An unexpected error occurred: {e}. Stopping...")
-                break
+                while True:
+                    message = await websocket.recv()
+                    message_data = json.loads(message)
+                    if message_data.get('type') == 'ticker':
+                        source, target, rate = self._extract_data_from_stream(message_data)
+                        if source and target:
+                            await self.storage.set_quote(source_currency=source, target_currency=target, rate=rate)
+                            logging.info(f"Updated {source}-{target}. Rate: {rate}")
 
 
 class ProviderFactory:
