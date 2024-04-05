@@ -7,7 +7,7 @@ import conversions.app
 import quote_consumer.app
 from config import settings
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=settings.LOG_LEVEL)
 
 
 if __name__ == "__main__":

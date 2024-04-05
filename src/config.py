@@ -1,4 +1,5 @@
 import enum
+import logging
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -28,7 +29,7 @@ class Settings(BaseSettings):
     REDIS_EXPIRATION_TIME: int = 604800  # 7 days
     STORAGE: StorageEnum = StorageEnum.REDIS
     PROVIDER: ProviderEnum = ProviderEnum.COINBASE
-
+    LOG_LEVEL: int = logging.INFO
     model_config = SettingsConfigDict(env_file=".env")
 
 
