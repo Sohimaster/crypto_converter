@@ -27,7 +27,7 @@ Docs are available at http://localhost:8000/docs#/
 ### Usage
 To convert an amount from one cryptocurrency to another, use the `/api/v1/conversion` endpoint with `from`, `to`, and `amount` as HTTP GET query parameters. For example:
 
-`GET /convert?from=BTC&to=USDT&amount=2`
+`GET /api/v1/conversion?from=BTC&to=USDT&amount=2`
 
 This will return a JSON response containing the converted amount and the conversion rate used.
 
