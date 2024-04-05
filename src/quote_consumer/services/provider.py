@@ -111,7 +111,8 @@ class CoinbaseRatesProvider(BaseRatesProvider):
         response = await websocket.recv()
         logging.info(f"Subscription response: {response}")
 
-    def _extract_data_from_stream(self, message_data):
+    @staticmethod
+    def _extract_data_from_stream(message_data):
         if message_data.get('type') != 'ticker':
             return None, None, None
 
