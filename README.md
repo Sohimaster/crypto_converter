@@ -67,7 +67,7 @@ After updating the `.env` file, restart the Crypto Converter services for the ch
 
 ## Libraries Used
 
-This project leverages several key Python libraries to provide robust and efficient functionality:
+This project uses several key Python libraries:
 
 - **[FastAPI](https://fastapi.tiangolo.com/)** (`fastapi==0.110.0`): A modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints.
 
