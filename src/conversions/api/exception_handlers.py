@@ -14,8 +14,14 @@ def base_api_exception_handler(_: Request, error: BaseApiException) -> responses
 
 
 def validation_exception_handler(_: Request, exc: RequestValidationError):
-    errors = {error["loc"][-1]: error["msg"] for error in exc.errors()}
+    errors = []
+    for error in exc.errors():
+        errors.append({
+            "field": error["loc"][-1],
+            "error": error["msg"]
+        })
+
     return responses.JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=errors,
+        content={"errors": errors},
     )

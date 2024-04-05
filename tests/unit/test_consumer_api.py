@@ -47,4 +47,11 @@ def test_quote_schema_fail(quote_consumer_api_client):
     response = quote_consumer_api_client.get(url="api/v1/quote", params=params)
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.json()
-    assert response.json() == {"source_currency": "Field required"}
+    assert response.json() == {
+        "errors": [
+            {
+                "field": "source_currency",
+                "error": "Field required"
+            }
+        ]
+    }

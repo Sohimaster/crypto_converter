@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import List
 
 from pydantic import BaseModel, field_validator
 
@@ -24,3 +25,12 @@ class QuoteRequest(Request):
     @field_validator("source_currency", "target_currency", mode="before")
     def convert_to_upper(cls, value: str):  # pylint: disable = E0213
         return value.upper()
+
+
+class ValidationErrorItem(BaseModel):
+    field: str
+    error: str
+
+
+class ValidationErrorResponse(BaseModel):
+    errors: List[ValidationErrorItem]

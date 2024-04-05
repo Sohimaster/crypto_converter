@@ -55,6 +55,14 @@ def test_conversion_schema_fail(conversion_api_client):
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.json()
     assert response.json() == {
-        "amount": "Input should be a valid decimal",
-        "from": "Field required",
+        "errors": [
+            {
+                "field": "from",
+                "error": "Field required"
+            },
+            {
+                "field": "amount",
+                "error": "Input should be a valid decimal"
+            },
+        ]
     }
