@@ -90,8 +90,7 @@ class CoinbaseRatesProvider(BaseRatesProvider):
         })
         logging.info(f'Message {subscribe_message}')
         await websocket.send(subscribe_message)
-        response = await websocket.recv()
-        logging.info(f"Subscription response: {response}")
+        logging.info(f"Subscribed to {product_ids}")
 
     def _extract_data_from_stream(self, message_data):
         coinbase_pair = message_data["product_id"].replace('-', '').lower()
