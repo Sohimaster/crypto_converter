@@ -27,7 +27,7 @@ Docs are available at http://localhost:8000/docs#/
 ### Usage
 To convert an amount from one cryptocurrency to another, use the `/api/v1/conversion` endpoint with `from`, `to`, and `amount` as HTTP GET query parameters. For example:
 
-`GET /convert?from=BTC&to=USDT&amount=2`
+`GET /api/v1/conversion?from=BTC&to=USDT&amount=2`
 
 This will return a JSON response containing the converted amount and the conversion rate used.
 
@@ -67,7 +67,7 @@ After updating the `.env` file, restart the Crypto Converter services for the ch
 
 ## Libraries Used
 
-This project leverages several key Python libraries to provide robust and efficient functionality:
+This project uses several key Python libraries:
 
 - **[FastAPI](https://fastapi.tiangolo.com/)** (`fastapi==0.110.0`): A modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints.
 
