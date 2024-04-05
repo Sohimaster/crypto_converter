@@ -111,15 +111,14 @@ class CoinbaseRatesProvider(BaseRatesProvider):
         response = await websocket.recv()
         logging.info(f"Subscription response: {response}")
 
-    @staticmethod
-    def _extract_data_from_stream(message_data):
-        if message_data.get('type') != 'ticker':
-            return None, None, None
+    def _extract_data_from_stream(self, message_data):
+        coinbase_pair = message_data["product_id"].replace('-', '').lower()
+        pair_data = self.currency_pairs[coinbase_pair]
 
-        # Coinbase provides the pair in the 'product_id' field
-        pair = message_data["product_id"]
-        source, target = pair.split("-")
+        source = pair_data["source"]
+        target = pair_data["target"]
         rate = Decimal(message_data["price"])
+
         return source, target, rate
 
     async def sync_pairs(self):
