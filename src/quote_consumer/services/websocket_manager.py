@@ -20,7 +20,7 @@ class WebSocketConnectionManager:
             self.websocket = await websockets.connect(self.url, ssl=ssl_context)
             return self.websocket
         except WebSocketException as e:
-            logging.warning(f"WebSocket issue during connection: {e}.")
+            logging.warning(f"WebSocket issue during connection: {e}. Retrying...")
             raise RetryException() from e
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -28,10 +28,10 @@ class WebSocketConnectionManager:
             await self.websocket.close()
         if exc_type:
             if exc_type == WebSocketException:
-                logging.warning(f"WebSocket issue: {exc_val}.")
+                logging.warning(f"WebSocket issue: {exc_val}. Retrying...")
                 raise RetryException() from exc_type
             elif exc_type == asyncio.exceptions.CancelledError:
-                logging.error("Asyncio task cancelled.")
+                logging.error("Asyncio task cancelled. Stopping...")
                 raise StopException() from exc_type
             else:
                 logging.error(f"An unexpected error occurred: {exc_val}. Stopping...")

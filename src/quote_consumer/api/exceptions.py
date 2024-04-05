@@ -14,9 +14,7 @@ class QuoteNotFound(BaseApiException):
 
 class RetryException(Exception):
     """Exception indicating the operation should retry."""
-    pass
 
 
 class StopException(Exception):
     """Exception indicating the operation should stop."""
-    pass
