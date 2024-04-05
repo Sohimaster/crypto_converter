@@ -1,10 +1,10 @@
 ![pytest workflow](https://github.com/Sohimaster/crypto_converter/actions/workflows/pytest.yml/badge.svg)
 ![Pylint workflow](https://github.com/Sohimaster/crypto_converter/actions/workflows/pylint.yml/badge.svg)
+![Python version](https://img.shields.io/badge/python-3.11-blue.svg)
+![fastapi](https://img.shields.io/badge/FastAPI-005571)
 
 # Crypto Converter
-
-## Overview
-Crypto Converter is a project designed to provide an API for converting amounts between different cryptocurrencies using HTTP JSON API. It does not perform actual currency operations/transfers but calculates the conversion based on current quotes. The project consists of two main components running as separate processes: the Currency Conversion API and the Quote Consumer.
+Crypto Converter is a project designed to provide an API for converting amounts between cryptocurrencies using HTTP JSON API. It does not perform actual currency operations/transfers but calculates the conversion based on current quotes. The project consists of two main components running as separate processes: the Currency Conversion API and the Quote Consumer.
 
 ## Getting Started
 
@@ -54,6 +54,23 @@ This will return a JSON response containing the converted amount and the convers
 
 - **Decimal Calculations**: Uses Python's `Decimal` with default precision of 28 decimal places for accurate currency calculations.
 - **Rounding**: At the API response stage, amounts are rounded to 6 decimal digits, and conversion rates to 12, using the `ROUND_HALF_UP` method.
+
+## Libraries Used
+
+This project leverages several key Python libraries to provide robust and efficient functionality:
+
+- **[FastAPI](https://fastapi.tiangolo.com/)** (`fastapi==0.110.0`): A modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints.
+
+- **[Uvicorn](https://www.uvicorn.org/)** (`uvicorn==0.29.0`): A lightning-fast ASGI server implementation, serving as the web server for FastAPI applications.
+
+- **[Pydantic](https://pydantic-docs.helpmanual.io/)** (`pydantic==2.6.4`): Data validation and settings management using Python type annotations.
+
+- **[Redis](https://redis.io/)** (`redis==5.0.3`): This project uses Redis for caching and storing real-time quotes.
+
+- **[WebSockets](https://websockets.readthedocs.io/en/stable/)** (`websockets==12.0`): A library for building WebSocket servers and clients in Python with a focus on correctness and simplicity. Used for real-time communication with cryptocurrency exchange APIs.
+
+The project also uses `pydantic-settings` for managing project settings through environment variables.
+
 
 ## Contributions
 Contributions are welcome! Please feel free to submit a pull request or create an issue for any bugs or feature requests.
