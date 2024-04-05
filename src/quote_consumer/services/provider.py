@@ -33,6 +33,27 @@ class BaseRatesProvider:
 
 
 class BinanceRatesProvider(BaseRatesProvider):
+    @staticmethod
+    async def _subscribe(pair, websocket):
+        subscribe_message = json.dumps(
+            {
+                "method": "SUBSCRIBE",
+                "params": [f"{pair}@ticker"],
+                "id": 1,
+            }
+        )
+        await websocket.send(subscribe_message)
+        await asyncio.sleep(1)
+        logging.info(f"Subscribed to {pair}@ticker")
+
+    def _extract_data_from_stream(self, stream, message_data):
+        pair = stream.split("@")[0]
+        pair_data = self.currency_pairs[pair]
+        source = pair_data["source"]
+        target = pair_data["target"]
+        rate = Decimal(message_data["data"]["c"])
+        return source, target, rate
+
     async def sync_pairs(self):
         while True:
             try:
@@ -42,34 +63,23 @@ class BinanceRatesProvider(BaseRatesProvider):
 
                 async with websockets.connect(self.url, ssl=ssl_context) as websocket:
                     for pair in self.currency_pairs:
-                        subscribe_message = json.dumps(
-                            {
-                                "method": "SUBSCRIBE",
-                                "params": [f"{pair}@ticker"],
-                                "id": 1,
-                            }
-                        )
-                        await websocket.send(subscribe_message)
-                        await asyncio.sleep(1)
-                        logging.info(f"Subscribed to {pair}@ticker")
+                        await self._subscribe(pair, websocket)
 
                     while True:
                         message = await websocket.recv()
                         message_data = json.loads(message)
                         stream = message_data.get("stream", "")
                         await asyncio.sleep(1)
+
                         if stream:
-                            pair = stream.split("@")[0]
-                            pair_data = self.currency_pairs[pair]
-                            source = pair_data["source"]
-                            target = pair_data["target"]
-                            rate = Decimal(message_data["data"]["c"])
+                            source, target, rate = self._extract_data_from_stream(stream, message_data)
                             await self.storage.set_quote(
                                 source_currency=source,
                                 target_currency=target,
                                 rate=rate,
                             )
                             logging.info(f"Updated {source} -> {target}. Rate: {rate}")
+
             except WebSocketException as e:
                 logging.warning(f"WebSocket issue: {e}. Reconnecting...")
                 continue
