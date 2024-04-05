@@ -30,15 +30,41 @@ async def conversion(
     quotes_client: IQuotesClient = Depends(deps.get_quotes_service),
 ):
     """
-    :param from_: Source currency
-    :param to: Target currency
-    :param amount: Amount in source currency to convert
-    :param quotes_client: FastAPI DI gets quotes
-    ...
-    raises QuotesOutdated
-    ...
-    :return: Converted amount
-    :rtype: models.ConversionResponse
+    Convert a specified amount from one currency to another using the latest exchange rate.
+
+    This endpoint allows you to specify a source currency (`from`), a target currency (`to`),
+    and the amount you wish to convert.
+    The conversion uses real-time exchange rates provided by the connected cryptocurrency exchange.
+
+    **Parameters**:
+
+    - `from`: The currency code of the source currency (e.g., "BTC").
+    - `to`: The currency code of the target currency (e.g., "ETH").
+    - `amount`: The amount of the source currency you want to convert.
+
+    **Returns**: A JSON object containing:
+
+    - `amount`: The converted amount in the target currency.
+    - `rate`: The exchange rate used for the conversion.
+
+    **Raises**:
+
+    - `QuotesOutdated`: If the exchange rates are older than one minute, indicating they may not be accurate.
+
+    **Example request**:
+
+    ```http
+    GET /conversion?from=BTC&to=ETH&amount=1
+    ```
+
+    **Example response**:
+
+    ```json
+    {
+      "amount": "0.032",
+      "rate": "32.00"
+    }
+    ```
     """
     rate = await quotes_client.get_exchange_rate(from_, to)
     if datetime.datetime.now() - rate.updated_at > datetime.timedelta(minutes=1):

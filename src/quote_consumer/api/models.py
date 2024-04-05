@@ -27,10 +27,10 @@ class QuoteRequest(Request):
         return value.upper()
 
 
-class ValidationErrorItem(BaseModel):
+class ValidationErrorItem(Response):
     field: str
     error: str
 
 
-class ValidationErrorResponse(BaseModel):
+class ValidationErrorResponse(Response):
     errors: List[ValidationErrorItem]

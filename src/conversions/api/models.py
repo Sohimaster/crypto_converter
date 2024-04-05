@@ -21,10 +21,10 @@ class ConversionResponse(Response):
         return str(value.quantize(Decimal(".000000000000"), rounding=ROUND_HALF_UP))
 
 
-class ValidationErrorItem(BaseModel):
+class ValidationErrorItem(Response):
     field: str
     error: str
 
 
-class ValidationErrorResponse(BaseModel):
+class ValidationErrorResponse(Response):
     errors: List[ValidationErrorItem]
