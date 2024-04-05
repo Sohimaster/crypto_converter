@@ -25,10 +25,11 @@ class WebSocketConnectionManager:
         if self.websocket:
             await self.websocket.close()
         if exc_type:
-            if exc_type == asyncio.exceptions.CancelledError:
-                logging.info("Asyncio task cancelled.")
-            elif exc_type == WebSocketException:
+            if exc_type == WebSocketException:
                 logging.warning(f"WebSocket issue: {exc_val}.")
+            elif exc_type == asyncio.exceptions.CancelledError:
+                logging.error("Asyncio task cancelled.")
+                raise exc_val
             else:
                 logging.error(f"An unexpected error occurred: {exc_val}. Stopping...")
                 raise exc_val
